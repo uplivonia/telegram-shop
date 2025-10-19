@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createT, getLangFromTelegram } from '../i18n.js'
-import useTelegram from '../hooks/useTelegram.js'
+import useTelegram from '../hooks/useTelegram.js
+import { API } from '../config.js'
 
 export function HomePage({ onOpen }) {
   const { tg } = useTelegram()
@@ -9,7 +10,7 @@ export function HomePage({ onOpen }) {
   const [items, setItems] = useState([])
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/products')
+      fetch(`${API}/api/products`)
       .then(r => r.json())
       .then(setItems)
       .catch(() => setItems([]))

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useTelegram from '../hooks/useTelegram.js'
 import { createT, getLangFromTelegram } from '../i18n.js'
+import { API } from '../config.js'
 
 export function AdminPage() {
   const { tg, initData, initDataUnsafe } = useTelegram()
@@ -12,7 +13,7 @@ export function AdminPage() {
   const headers = { 'Content-Type':'application/json', 'X-Telegram-InitData': initData || '' }
 
   const load = async () => {
-    const res = await fetch('http://localhost:4000/api/admin/products', { headers })
+    const res = await fetch(`${API}/api/admin/products`, { headers: { ...} })
     const data = await res.json()
     setList(Array.isArray(data) ? data : [])
   }

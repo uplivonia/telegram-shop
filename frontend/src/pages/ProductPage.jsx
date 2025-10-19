@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createT, getLangFromTelegram } from '../i18n.js'
 import useTelegram from '../hooks/useTelegram.js'
+import { API } from '../config.js'
 
 export function ProductPage({ id, onAdd }) {
   const { tg } = useTelegram()
@@ -10,7 +11,7 @@ export function ProductPage({ id, onAdd }) {
 
   useEffect(() => {
     if (!id) return
-    fetch(`http://localhost:4000/api/products/${id}`)
+      fetch(`${API}/api/products/${id}`)
       .then(r => r.json())
       .then(setProduct)
       .catch(() => setProduct(null))

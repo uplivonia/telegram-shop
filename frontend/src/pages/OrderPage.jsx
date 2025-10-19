@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { API } from '../config.js'
 
 export function OrderPage({ id }) {
   const [order, setOrder] = useState(null)
@@ -7,7 +8,7 @@ export function OrderPage({ id }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const r = await fetch(`http://localhost:4000/api/orders/${id}`)
+        const r = await fetch(`${API}/api/orders/${id}`)
         const d = await r.json()
         if (d?.order) setOrder(d.order)
         else setErr(d?.error || 'Not found')

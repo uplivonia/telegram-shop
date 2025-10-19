@@ -1,5 +1,5 @@
-
 import React, { useEffect, useState } from 'react'
+import { API } from '../config.js'
 
 export function SuccessPage() {
   const [status, setStatus] = useState('pending')
@@ -12,7 +12,7 @@ export function SuccessPage() {
     const poll = async () => {
       if (!oid) return
       try {
-        const res = await fetch(`http://localhost:4000/api/orders/${oid}`)
+          const res = await fetch(`${API}/api/orders/${oid}`)
         const data = await res.json()
         if (data?.order?.status) {
           setStatus(data.order.status)
