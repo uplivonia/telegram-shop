@@ -3,25 +3,27 @@ import useTelegram from '../hooks/useTelegram.js'
 import { API } from '../config.js'
 
 export function OrdersPage() {
-  const { tg, initData, initDataUnsafe, isTelegram } = useTelegram()
-  const [orders, setOrders] = useState([])
-  const [err, setErr] = useState(null)
+    const { initData, isTelegram } = useTelegram()
+    const [orders, setOrders] = useState([])
+    const [err, setErr] = useState(null)
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const res = await fetch('${API}/api/orders/mine', {
-          headers: { 'X-Telegram-InitData': initData || '' }
-        })
-        const data = await res.json()
-        if (data?.orders) setOrders(data.orders)
-        else setErr(data?.error || 'Unknown error')
-      } catch(e) {
-        setErr('Failed to load orders')
-      }
-    }
-    run()
-  }, [initData])
+    useEffect(() => {
+        const load = async () => {
+            if (!isTelegram || !initData) { setErr('Open inside Telegram'); return }
+            try {
+                const res = await fetch(`${API}/api/orders/mine`, {
+                    headers: { 'X-Telegram-InitData': initData }
+                })
+                if (!res.ok) throw new Error(`HTTP ${res.status}`)
+                const data = await res.json()
+                setOrders(Array.isArray(data) ? data : [])
+                setErr(null)
+            } catch (e) {
+                setErr('Failed to load orders')
+            }
+        }
+        load()
+    }, [isTelegram, initData])
 
   return (
     <div style={{padding:16}}>
