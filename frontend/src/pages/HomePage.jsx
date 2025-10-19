@@ -1,36 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import { createT, getLangFromTelegram } from '../i18n.js'
+import React, { useEffect, useState } from 'react'
 import useTelegram from '../hooks/useTelegram.js'
+import { createT, getLangFromTelegram } from '../i18n.js'
 import { API } from '../config.js'
+import AppShell from '../components/AppShell.jsx'
+import { Button } from '../components/Button.jsx'
+import { SkeletonCard } from '../components/Skeleton.jsx'
 
-export function HomePage({ onOpen }) {
-  const { tg } = useTelegram()
-  const lang = getLangFromTelegram(tg)
-  const t = createT(lang)
-  const [items, setItems] = useState([])
+export function HomePage({ addToCart }) {
+    const { tg } = useTelegram()
+    const t = createT(getLangFromTelegram(tg))
+    const [items, setItems] = useState(null)
+    const [err, setErr] = useState(null)
 
-  useEffect(() => {
-      fetch(`${API}/api/products`)
-      .then(r => r.json())
-      .then(setItems)
-      .catch(() => setItems([]))
-  }, [])
+    useEffect(() => {
+        (async () => {
+            try {
+                const r = await fetch(`${API}/api/products`)
+                const data = await r.json()
+                setItems(Array.isArray(data) ? data : [])
+            } catch (e) {
+                setErr('Failed to load products')
+                setItems([])
+            }
+        })()
+    }, [])
 
-  return (
-    <div style={{padding:16}}>
-      <h2>{t('catalog')}</h2>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-        {items.map(p => (
-          <div key={p.id} style={{border:'1px solid #eee',borderRadius:12,padding:12}}>
-            <div style={{height:100,display:'flex',alignItems:'center',justifyContent:'center',background:'#fafafa',borderRadius:8,marginBottom:8}}>
-              <span role="img" aria-label="img">🛍️</span>
+    return (
+        <AppShell active="catalog">
+            <h2 style={{ margin: '8px 0 16px' }}>🛍 {t('catalog') || 'Catalog'}</h2>
+
+            {items === null && (
+                <div className="cards">
+                    {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                </div>
+            )}
+
+            {err && <div className="small" style={{ color: '#b00020', marginBottom: 12 }}>{err}</div>}
+
+            {items && !!items.length && (
+                <div className="cards">
+                    {items.map(p => (
+                        <div className="card" key={p.id}>
+                            <h4>{p.title}</h4>
+                            <div className="small">{p.description || '—'}</div>
+                            <div className="price">${(p.price ?? 0).toFixed(2)}</div>
+                            <Button onClick={() => addToCart(p)}>Add to cart</Button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {items && items.length === 0 && !err && (
+                <div className="small">No products yet.</div>
+            )}
+
+            <div className="small" style={{ textAlign: 'center', margin: '20px 0 80px' }}>
+                <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a>
             </div>
-            <div style={{fontWeight:600}}>{p.title}</div>
-            <div style={{opacity:0.8,fontSize:14}}>${p.price}</div>
-            <button style={{marginTop:8,width:'100%'}} onClick={()=>onOpen(p.id)}>{t('open')}</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+        </AppShell>
+    )
 }
