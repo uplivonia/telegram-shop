@@ -1,18 +1,27 @@
-import en from './locales/en.json'
+﻿import en from './locales/en.json'
 import ru from './locales/ru.json'
 import es from './locales/es.json'
 import de from './locales/de.json'
 
 const dicts = { en, ru, es, de }
 
+/**
+ * Определяет язык пользователя из Telegram или браузера
+ * и возвращает ISO-код (en / ru / es / de).
+ * По умолчанию — 'en'
+ */
 export function getLangFromTelegram(tg) {
-  const code = tg?.initDataUnsafe?.user?.language_code
-  if (code && dicts[code]) return code
-  const nav = (navigator.language || 'en').slice(0,2)
-  return dicts[nav] ? nav : 'en'
+    const tgLang = tg?.initDataUnsafe?.user?.language_code?.slice(0, 2)?.toLowerCase()
+    if (tgLang && dicts[tgLang]) return tgLang
+
+    const navLang = (navigator.language || 'en').slice(0, 2).toLowerCase()
+    return dicts[navLang] ? navLang : 'en'
 }
 
+/**
+ * Создаёт функцию перевода
+ */
 export function createT(lang) {
-  const d = dicts[lang] || en
-  return (key) => d[key] || key
+    const d = dicts[lang] || en
+    return (key) => d[key] || en[key] || key
 }
