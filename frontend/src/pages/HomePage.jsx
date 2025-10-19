@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { createT, getLangFromTelegram } from '../i18n.js'
-import React, { useEffect, useState } from 'react'
 import useTelegram from '../hooks/useTelegram.js'
 import { createT, getLangFromTelegram } from '../i18n.js'
 import { API } from '../config.js'
@@ -46,7 +44,7 @@ export function HomePage({ addToCart }) {
                             <h4>{p.title}</h4>
                             <div className="small">{p.description || '—'}</div>
                             <div className="price">${(p.price ?? 0).toFixed(2)}</div>
-                            <Button onClick={() => addToCart(p)}>Add to cart</Button>
+                            <Button onClick={() => addToCart?.(p)}>Add to cart</Button>
                         </div>
                     ))}
                 </div>
