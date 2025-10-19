@@ -1,15 +1,16 @@
-import rateLimit from 'express-rate-limit';
+﻿// backend/middleware/limits.js
+import rateLimit from 'express-rate-limit'
 
-export const strictLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  limit: 30, // 30 requests / minute per IP
-  standardHeaders: true,
-  legacyHeaders: false
-});
+const base = {
+    windowMs: 60 * 1000,
+    limit: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    // 👇 глушим строгую проверку X-Forwarded-For
+    validate: { xForwardedForHeader: false },
+    keyGenerator: (req) => req.ip,
+    skip: (req) => req.path === '/api/payments/webhook' || req.path === '/api/health',
+}
 
-export const paymentsLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  limit: 10,
-  standardHeaders: true,
-  legacyHeaders: false
-});
+export const strictLimiter = rateLimit(base)
+export const paymentsLimiter = rateLimit({ ...base, windowMs: 15 * 60 * 1000, limit: 30 })
