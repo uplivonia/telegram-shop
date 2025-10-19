@@ -5,6 +5,7 @@ import { createT, getLangFromTelegram } from '../i18n.js'
 const OWNER = import.meta.env.VITE_OWNER_USERNAME || ''
 
 export function Header() {
+  const { tg, isTelegram } = useTelegram() {
   const { username, isTelegram, tg } = useTelegram()
   const lang = getLangFromTelegram(tg)
   const t = createT(lang)

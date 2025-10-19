@@ -1,4 +1,5 @@
 import React from 'react'
+import { API } from '../config.js'
 
 export function PrivacyPage() {
   return (

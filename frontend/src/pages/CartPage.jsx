@@ -1,6 +1,7 @@
 import React from 'react'
 import { createT, getLangFromTelegram } from '../i18n.js'
 import useTelegram from '../hooks/useTelegram.js'
+import { API } from '../config.js'
 
 export function CartPage({ cart, onCheckout, onClear }) {
   const { tg } = useTelegram()

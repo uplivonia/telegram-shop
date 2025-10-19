@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import useTelegram from '../hooks/useTelegram.js'
+import { API } from '../config.js'
 
 export function OrdersPage() {
   const { tg, initData, initDataUnsafe, isTelegram } = useTelegram()
@@ -9,7 +10,7 @@ export function OrdersPage() {
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/orders/mine', {
+        const res = await fetch('${API}/api/orders/mine', {
           headers: { 'X-Telegram-InitData': initData || '' }
         })
         const data = await res.json()
