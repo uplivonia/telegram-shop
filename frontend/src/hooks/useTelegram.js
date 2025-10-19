@@ -1,19 +1,31 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 
 export default function useTelegram() {
-  const [tg, setTg] = useState(null)
+    const [tg, setTg] = useState(null)
+    const [isTelegram, setIsTelegram] = useState(false)
+    const [initData, setInitData] = useState('')
 
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      setTg(window.Telegram.WebApp)
-      window.Telegram.WebApp.ready && window.Telegram.WebApp.ready()
-    }
-  }, [])
+    useEffect(() => {
+        const w = window
+        // Телеграм кладёт объект сюда
+        const app = w.Telegram && w.Telegram.WebApp ? w.Telegram.WebApp : null
 
-  const isTelegram = !!tg
-  const username = useMemo(() => {
-    return tg?.initDataUnsafe?.user?.username || null
-  }, [tg])
+        if (app) {
+            try { app.ready?.(); app.expand?.() } catch { }
+            setIsTelegram(true)
+            setTg(app)
 
-  return { tg, isTelegram, username }
+            // Ищем initData всеми способами
+            const viaApi = app.initData || ''
+            const viaHash = new URLSearchParams(w.location.hash.replace(/^#/, '')).get('tgWebAppData') || ''
+            const viaSearch = new URLSearchParams(w.location.search).get('tgWebAppData') || ''
+            setInitData(viaApi || viaHash || viaSearch || '')
+        } else {
+            setIsTelegram(false)
+            setTg(null)
+            setInitData('')
+        }
+    }, [])
+
+    return { tg, isTelegram, initData }
 }
